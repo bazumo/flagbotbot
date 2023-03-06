@@ -8,6 +8,7 @@ import { scoreboardCommand } from "./commands/scoreboardCommand";
 import { createChallengeCommand } from "./commands/createChallengeCommand";
 import * as dotenv from 'dotenv'
 import { DiscordCommand } from "./DiscordCommand";
+import { challengesCommand } from "./commands/challengesCommand";
 
 
 dotenv.config()
@@ -61,8 +62,11 @@ class Flagbotbot {
             console.log(`Logged in as ${this.client.user!.tag}!`);
         });
 
+        this.commands.forEach(cmd => this.registerCommand(cmd));
+
         await this.updateDiscordApplication();
         await this.client.login(TOKEN);
+
     }
 }
 
@@ -73,7 +77,14 @@ async function main() {
         driver: sqlite3.Database
     })
     const db = new DB(raw_db);
-    const bot = new Flagbotbot(db, [pingCommand, flagCommand, scoreboardCommand, createChallengeCommand]);
+
+    const bot = new Flagbotbot(db, [
+        pingCommand,
+        flagCommand,
+        scoreboardCommand,
+        createChallengeCommand,
+        challengesCommand
+    ]);
     await bot.init();
 }
 

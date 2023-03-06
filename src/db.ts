@@ -18,6 +18,7 @@ export class DB {
         (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name TEXT,
+           description TEXT,
            category TEXT,
            flag TEXT
        );`)
@@ -51,8 +52,8 @@ export class DB {
         await this.db.run(`DROP TABLE IF EXISTS users;`);
     }
 
-    async createChallenge(name: string, category: string, flag: string) {
-        return this.db.run("INSERT INTO challenges (name, category, flag) VALUES (?, ?, ?)", [name, category, flag]);
+    async createChallenge(name: string, description: string, category: string, flag: string) {
+        return this.db.run("INSERT INTO challenges (name, description, category, flag) VALUES (?, ?, ?, ?)", [name, description, category, flag]);
     }
 
     async ensureUser(user: User) {
@@ -71,6 +72,11 @@ export class DB {
     getChallenges() {
         return this.db.all("SELECT * FROM challenges");
     }
+
+    getChallengesByCategory(cat: string) {
+        return this.db.all("SELECT * FROM challenges WHERE category = ?", [cat]);
+    }
+
 
     getSolves() {
         return this.db.all("SELECT users.name as user_name, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id");

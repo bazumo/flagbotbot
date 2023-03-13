@@ -14,7 +14,7 @@ export class DB {
 
     async createTables() {
         await this.db.run(`
-        CREATE TABLE challenges
+        CREATE TABLE IF NOT EXISTS challenges
         (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name TEXT,
@@ -25,8 +25,10 @@ export class DB {
 
 
 
+
+
         await this.db.run(`
-       CREATE TABLE solves
+       CREATE TABLE IF NOT EXISTS solves
        (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           user_id TEXT,
@@ -36,7 +38,7 @@ export class DB {
       )`);
 
         await this.db.run(`
-      CREATE TABLE users
+      CREATE TABLE IF NOT EXISTS users
             (
                 id INTEGER PRIMARY KEY,
                 name TEXT
@@ -84,7 +86,6 @@ export class DB {
     getChallengesByCategory(cat: string) {
         return this.db.all("SELECT * FROM challenges WHERE category = ?", [cat]);
     }
-
 
     getSolves() {
         return this.db.all("SELECT users.name as user_name, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id");

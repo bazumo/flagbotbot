@@ -56,6 +56,10 @@ export class DB {
         return this.db.run("INSERT INTO challenges (name, description, category, flag) VALUES (?, ?, ?, ?)", [name, description, category, flag]);
     }
 
+    async updateChallenge(id: number, name: string, description: string, category: string, flag: string) {
+        return this.db.run("UPDATE challenges SET name = ?, description = ?, category = ?, flag = ? WHERE id = ?", [name, description, category, flag, id]);
+    }
+
     async ensureUser(user: User) {
         return this.db.run("INSERT OR IGNORE INTO users (id, name) VALUES (?, ?)", [user.id, user.username]);
     }
@@ -71,6 +75,10 @@ export class DB {
 
     getChallenges() {
         return this.db.all("SELECT * FROM challenges");
+    }
+
+    getChallenge(id: number) {
+        return this.db.get("SELECT * FROM challenges WHERE id = ?", [id]);
     }
 
     getChallengesByCategory(cat: string) {

@@ -5,7 +5,7 @@ import { DB } from "./db";
 import { pingCommand } from "./commands/pingCommand";
 import { flagCommand } from "./commands/flagCommand";
 import { scoreboardCommand } from "./commands/scoreboardCommand";
-import { createChallengeCommand } from "./commands/createChallengeCommand";
+import { updateChallengeCommand } from "./commands/updateChallengeCommand";
 import * as dotenv from 'dotenv'
 import { DiscordCommand } from "./DiscordCommand";
 import { challengesCommand } from "./commands/challengesCommand";
@@ -82,7 +82,7 @@ async function main() {
         pingCommand,
         flagCommand,
         scoreboardCommand,
-        createChallengeCommand,
+        updateChallengeCommand,
         challengesCommand
     ]);
     await bot.init();

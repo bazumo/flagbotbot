@@ -28,6 +28,11 @@ export const challengesCommand = new DiscordCommand(
 
         const solvesByChallenge = getSolvesByChallenge(solves)
 
+        console.log(solves)
+
+        const solvedByUser = solves.filter(solve => solve.user_id == interaction.user.id).map(solve => solve.challenge_id);
+
+        console.log(solvedByUser)
 
 
         challenges.forEach(challenge => {
@@ -36,8 +41,9 @@ export const challengesCommand = new DiscordCommand(
                 solves === 1 ? '1 solve' : `${solves} solves`;
 
             const points = scoringFunction(solves)
+            const hasSolved = solvedByUser.includes(challenge.id);
 
-            answer.push(`\`${challenge.id} \`${challenge.name} - ${challenge.category} - ${solves_string} - ${points.toFixed()} points
+            answer.push(`\`${challenge.id} \`${challenge.name} - ${challenge.category} - ${solves_string} - ${points.toFixed()} points - ${hasSolved ? '✅' : '⭕️'}
 \`\`\`
 ${challenge.description}
 \`\`\`

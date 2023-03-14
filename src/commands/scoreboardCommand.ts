@@ -13,7 +13,7 @@ export const scoreboardCommand = new DiscordCommand(
         console.log(solves);
         const scores = calculateScore(solves)
         console.log(scores)
-        const sl = scores.map(score => `${score.user_name} has ${score.score} points`);
-        await interaction.reply({ content: `${sl.join("\n")}`, ephemeral: true });
+        const sl = scores.map(score => `${score.score.padStart(4, " ")} points: ${score.user_name}`);
+        await interaction.reply({ content: `\`\`\`\n${sl.join("\n")}\n\`\`\``, ephemeral: true });
     }
 );

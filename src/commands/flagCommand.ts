@@ -17,6 +17,13 @@ export const flagCommand = new DiscordCommand({
         const flag = interaction.options.getString('flag', true);
         const user = interaction.user;
         console.log("FLAG", flag);
+
+        const hasSolve = await db.hasSolve(user, flag);
+        if (hasSolve) {
+            await interaction.reply({ content: 'You already solved this challenge!', ephemeral: true });
+            return;
+        }
+
         const solve = await db.createSolve(user, flag);
         console.log(solve);
         if (solve) {

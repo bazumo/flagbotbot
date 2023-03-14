@@ -1,16 +1,16 @@
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import { DiscordCommand } from "../DiscordCommand";
-import { categoryOption } from "./shared";
+import { categoryOption, isCommitteeMember } from "./shared";
 
 export const updateChallengeCommand = new DiscordCommand(
     {
         name: 'update_challenge',
-        description: 'Create a new challenge',
+        description: 'Update an existing challenge',
         options: [
             {
                 name: 'id',
                 description: 'ID of challenge to update',
-                type: ApplicationCommandOptionType.Integer,
+                type: ApplicationCommandOptionType.Number,
                 required: true,
             },
             {
@@ -39,7 +39,14 @@ export const updateChallengeCommand = new DiscordCommand(
     },
 
     async (interaction, db) => {
-        const id = Number(interaction.options.getString('id', true));
+
+
+        if (!isCommitteeMember(interaction)) {
+            await interaction.reply({ content: 'Only committee members can update challenges!', ephemeral: true });
+            return
+        }
+
+        const id = interaction.options.getNumber('id', true);
 
         const oldChallenge = await db.getChallenge(id);
 

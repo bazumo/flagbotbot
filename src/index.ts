@@ -1,14 +1,16 @@
-import { REST, Routes, Client, GatewayIntentBits } from "discord.js"
-import sqlite3 from 'sqlite3'
+import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
+import * as dotenv from 'dotenv';
 import { open } from "sqlite";
-import { DB } from "./db";
-import { pingCommand } from "./commands/pingCommand";
+import sqlite3 from 'sqlite3';
+import { challengesCommand } from "./commands/challengesCommand";
+import { createChallengeCommand } from "./commands/createChallengeCommand";
 import { flagCommand } from "./commands/flagCommand";
+import { pingCommand } from "./commands/pingCommand";
+import { recentSolvesCommand } from "./commands/recentSolvesCommand";
 import { scoreboardCommand } from "./commands/scoreboardCommand";
 import { updateChallengeCommand } from "./commands/updateChallengeCommand";
-import * as dotenv from 'dotenv'
+import { DB } from "./db";
 import { DiscordCommand } from "./DiscordCommand";
-import { challengesCommand } from "./commands/challengesCommand";
 
 
 dotenv.config()
@@ -84,6 +86,8 @@ async function main() {
         pingCommand,
         flagCommand,
         scoreboardCommand,
+        createChallengeCommand,
+        recentSolvesCommand,
         updateChallengeCommand,
         challengesCommand
     ]);

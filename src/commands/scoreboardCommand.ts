@@ -1,4 +1,6 @@
 import { DiscordCommand } from "../DiscordCommand";
+import { calculateScore } from "./shared";
+
 
 export const scoreboardCommand = new DiscordCommand(
     {
@@ -9,7 +11,9 @@ export const scoreboardCommand = new DiscordCommand(
     async (interaction, db) => {
         const solves = await db.getSolves();
         console.log(solves);
-        const sl = solves.map(solve => `${solve.user_name} solved ${solve.challenge_name} at <t:${new Date(solve.date).getTime() / 1000}:R>`);
-        await interaction.reply({ content: `Solves: ${sl}`, ephemeral: true });
+        const scores = calculateScore(solves)
+        console.log(scores)
+        const sl = scores.map(score => `${score.user_name} has ${score.score} points`);
+        await interaction.reply({ content: `${sl.join("\n")}`, ephemeral: true });
     }
 );

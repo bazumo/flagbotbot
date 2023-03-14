@@ -1,6 +1,10 @@
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import { DiscordCommand } from "../DiscordCommand";
-import { categoryOption } from "./shared";
+import { categoryOption, isCommitteeMember } from "./shared";
+
+
+
+
 
 export const createChallengeCommand = new DiscordCommand(
     {
@@ -33,6 +37,11 @@ export const createChallengeCommand = new DiscordCommand(
     },
 
     async (interaction, db) => {
+
+        if (!isCommitteeMember(interaction)) {
+            await interaction.reply({ content: 'Only committee members can create challenges!', ephemeral: true });
+            return
+        }
         const name = interaction.options.getString('name', true);
         const description = interaction.options.getString('description', true);
         const category = interaction.options.getString('category', true);

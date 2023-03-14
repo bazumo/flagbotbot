@@ -48,12 +48,6 @@ export class DB {
         `);
     }
 
-    async nuke() {
-        await this.db.run(`DROP TABLE IF EXISTS challenges; `);
-        await this.db.run(`DROP TABLE IF EXISTS solves;`);
-        await this.db.run(`DROP TABLE IF EXISTS users;`);
-    }
-
     async createChallenge(name: string, description: string, category: string, flag: string) {
         return this.db.run("INSERT INTO challenges (name, description, category, flag) VALUES (?, ?, ?, ?)", [name, description, category, flag]);
     }
@@ -66,7 +60,12 @@ export class DB {
         return this.db.run("INSERT OR IGNORE INTO users (id, name) VALUES (?, ?)", [user.id, user.username]);
     }
 
-    async createSolve(user: User, flag: string,) {
+    async hasSolve(user: User, flag: string) {
+        const solve = await this.db.get("SELECT * FROM solves JOIN challenges ON solves.challenge_id = challenges.id WHERE user_id = ? AND flag = ?", [user.id, flag]);
+        return solve !== undefined;
+    }
+
+    async createSolve(user: User, flag: string) {
         await this.ensureUser(user);
         const challenges = await this.getChallenges();
         const challenge = challenges.find(challenge => challenge.flag === flag);
@@ -88,7 +87,7 @@ export class DB {
     }
 
     getSolves() {
-        return this.db.all("SELECT users.name as user_name, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id");
+        return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id ORDER BY date DESC LIMIT 10");
     }
 
 }

@@ -1,5 +1,5 @@
 import { DiscordCommand } from "../DiscordCommand";
-import { categoryOption } from "./shared";
+import { categoryOption, getSolvesByChallenge, scoringFunction } from "./shared";
 
 export const challengesCommand = new DiscordCommand(
     {
@@ -24,11 +24,20 @@ export const challengesCommand = new DiscordCommand(
 
         answer.push(`Challenge list`)
 
+        const solves = await db.getSolves();
+
+        const solvesByChallenge = getSolvesByChallenge(solves)
 
 
 
         challenges.forEach(challenge => {
-            answer.push(`${challenge.name} - ${challenge.category}
+            const solves = solvesByChallenge[challenge.id] ?? 0;
+            const solves_string = solves === 0 ? 'No solves' :
+                solves === 1 ? '1 solve' : `${solves} solves`;
+
+            const points = scoringFunction(solves)
+
+            answer.push(`\`${challenge.id} \`${challenge.name} - ${challenge.category} - ${solves_string} - ${points.toFixed()} points
 \`\`\`
 ${challenge.description}
 \`\`\`

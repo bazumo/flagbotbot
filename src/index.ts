@@ -75,7 +75,7 @@ class Flagbotbot {
 
 async function main() {
     const raw_db = await open({
-        filename: 'database.db',
+        filename: 'db/database.db',
         driver: sqlite3.Database
     })
     const db = new DB(raw_db);

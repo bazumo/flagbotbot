@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  discord_bot:
+    build: .
+    volumes:
+    # Specify an absolute path mapping
+    - ./db:/app/db

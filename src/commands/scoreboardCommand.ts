@@ -13,7 +13,9 @@ export const scoreboardCommand = new DiscordCommand(
         console.log(solves);
         const scores = calculateScore(solves)
         console.log(scores)
-        const sl = scores.map(score => `${score.score.padStart(4, " ")} points: ${score.user_name}`);
+        const sorted = scores.sort((a, b) => b.score - a.score);
+        const sl = sorted.map(score => `${score.score.toFixed().padStart(4, " ")} points: ${score.user_name}`);
+
         await interaction.reply({ content: `\`\`\`\n${sl.join("\n")}\n\`\`\``, ephemeral: true });
     }
 );

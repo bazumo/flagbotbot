@@ -44,6 +44,6 @@ ${challenge.description}
 `)
         })
 
-        await interaction.reply({ content: answer.join('\n') });
+        await interaction.reply({ content: answer.join('\n'), ephemeral: true });
     }
 );

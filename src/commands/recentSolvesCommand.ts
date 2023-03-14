@@ -7,7 +7,7 @@ export const recentSolvesCommand = new DiscordCommand(
     },
 
     async (interaction, db) => {
-        const solves = await db.getSolves();
+        const solves = await db.getRecentSolves();
         console.log(solves);
         const sl = solves.map(solve => `${solve.user_name} solved ${solve.challenge_name} at <t:${new Date(solve.date).getTime() / 1000}:R>`);
         await interaction.reply({ content: `Solves: ${sl.join("\n")}`, ephemeral: true });

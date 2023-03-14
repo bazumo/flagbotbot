@@ -51,7 +51,7 @@ export function calculateScore(solves: Solve[]) {
         return acc
     }, {})
 
-    return Object.entries(scores).map(([user_id, score]) => ({ user_id, score: score.toFixed(), user_name: solves.find(solve => solve.user_id == user_id)?.user_name }))
+    return Object.entries(scores).map(([user_id, score]) => ({ user_id, score: score, user_name: solves.find(solve => solve.user_id == user_id)?.user_name }))
 
 
 }

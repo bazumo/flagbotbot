@@ -24,10 +24,10 @@ export const flagCommand = new DiscordCommand({
             return;
         }
 
-        const solve = await db.createSolve(user, flag);
-        console.log(solve);
-        if (solve) {
-            await interaction.reply({ content: 'Congratulations, successfully solved challenge', ephemeral: true });
+        const challenge = await db.createSolve(user, flag);
+        console.log(challenge);
+        if (challenge) {
+            await interaction.reply({ content: `Congratulations, successfully solved challenge ${challenge.name}`, ephemeral: true });
         } else {
             await interaction.reply({ content: 'Wrong flag!', ephemeral: true });
         }

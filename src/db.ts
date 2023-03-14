@@ -65,32 +65,37 @@ export class DB {
         return solve !== undefined;
     }
 
+    async getChallengeByFlag(flag: string) {
+        const solve = await this.db.get("SELECT * FROM challenges WHERE flag = ?", [flag]);
+        return solve;
+    }
+
     async createSolve(user: User, flag: string) {
         await this.ensureUser(user);
-        const challenges = await this.getChallenges();
-        const challenge = challenges.find(challenge => challenge.flag === flag);
+        const challenge = await this.getChallengeByFlag(flag);
         if (challenge) {
-            return this.db.run("INSERT INTO solves (user_id, challenge_id) VALUES (?, ?)", [user.id, challenge.id]);
+            await this.db.run("INSERT INTO solves (user_id, challenge_id) VALUES (?, ?)", [user.id, challenge.id]);
+            return challenge;
         }
     }
 
-    getChallenges() {
+    async getChallenges() {
         return this.db.all("SELECT * FROM challenges");
     }
 
-    getChallenge(id: number) {
+    async getChallenge(id: number) {
         return this.db.get("SELECT * FROM challenges WHERE id = ?", [id]);
     }
 
-    getChallengesByCategory(cat: string) {
+    async getChallengesByCategory(cat: string) {
         return this.db.all("SELECT * FROM challenges WHERE category = ?", [cat]);
     }
 
-    getRecentSolves() {
+    async getRecentSolves() {
         return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id ORDER BY date DESC LIMIT 10");
     }
 
-    getSolves() {
+    async getSolves() {
         return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id");
     }
 

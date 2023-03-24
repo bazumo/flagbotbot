@@ -43,7 +43,7 @@ export const challengesCommand = new DiscordCommand(
             const points = scoringFunction(solves)
             const hasSolved = solvedByUser.includes(challenge.id);
 
-            answer.push(`\`${challenge.id} \`${challenge.name} - ${challenge.category} - ${solves_string} - ${points.toFixed()} points - ${hasSolved ? '✅' : '⭕️'}
+            answer.push(`\`${challenge.id}\` ${challenge.name} - ${challenge.category} - ${solves_string} - ${points.toFixed()} points - ${hasSolved ? '✅' : '⭕️'}
 \`\`\`
 ${challenge.description}
 \`\`\`

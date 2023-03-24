@@ -1,7 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import { Flagbotbot } from ".";
 import { DB } from "./db";
 
-type InteractionHandler = (ev: ChatInputCommandInteraction, db: DB) => Promise<any>;
+type InteractionHandler = (ev: ChatInputCommandInteraction, db: DB, client: Flagbotbot) => Promise<any>;
 
 export class DiscordCommand {
     description: any;
@@ -12,8 +13,8 @@ export class DiscordCommand {
         this.handler = handler;
     }
 
-    handle(ev: ChatInputCommandInteraction, db: DB) {
+    handle(ev: ChatInputCommandInteraction, db: DB, client: Flagbotbot) {
         console.log("Handling", this.description.name);
-        this.handler(ev, db);
+        this.handler(ev, db, client);
     }
 }

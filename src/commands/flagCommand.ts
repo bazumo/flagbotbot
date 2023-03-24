@@ -13,11 +13,9 @@ export const flagCommand = new DiscordCommand({
         }
     ]
 },
-    async (interaction, db) => {
+    async (interaction, db, client) => {
         const flag = interaction.options.getString('flag', true);
         const user = interaction.user;
-        console.log("FLAG", flag);
-
         const hasSolve = await db.hasSolve(user, flag);
         if (hasSolve) {
             await interaction.reply({ content: 'You already solved this challenge!', ephemeral: true });
@@ -25,9 +23,15 @@ export const flagCommand = new DiscordCommand({
         }
 
         const challenge = await db.createSolve(user, flag);
-        console.log(challenge);
         if (challenge) {
             await interaction.reply({ content: `Congratulations, successfully solved challenge ${challenge.name}`, ephemeral: true });
+            // according to github copilot
+            if (challenge.category === 'forensics') {
+                await interaction.reply({ content: 'https://www.youtube.com/watch?v=QH2-TGUlwu4', ephemeral: true });
+            }
+            if ((await db.getSolvesByChallengeId(challenge.id)).length === 1) {
+                await client.postToAnnouncements(`Congratulations to ${user.username} for being the first to solve ${challenge.name}!`);
+            }
         } else {
             await interaction.reply({ content: 'Wrong flag!', ephemeral: true });
         }

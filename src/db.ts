@@ -99,4 +99,8 @@ export class DB {
         return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id");
     }
 
+    async getSolvesByChallengeId(id: number) {
+        return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id WHERE challenge_id = ?", [id]);
+    }
+
 }

@@ -28,11 +28,8 @@ export const challengesCommand = new DiscordCommand(
 
         const solvesByChallenge = getSolvesByChallenge(solves)
 
-        console.log(solves)
-
         const solvedByUser = solves.filter(solve => solve.user_id == interaction.user.id).map(solve => solve.challenge_id);
 
-        console.log(solvedByUser)
 
 
         challenges.forEach(challenge => {

@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
+import { Client, GatewayIntentBits, REST, Routes, TextBasedChannel, TextChannel } from "discord.js";
 import * as dotenv from 'dotenv';
 import { open } from "sqlite";
 import sqlite3 from 'sqlite3';
@@ -24,8 +24,9 @@ if (process.env.CLIENT_ID == undefined) {
 
 const TOKEN = process.env.TOKEN
 const CLIENT_ID = process.env.CLIENT_ID
+const CHANNEL_ID_ANNOUNCEMENTS = process.env.CHANNEL_ID_ANNOUNCEMENTS ?? "1084926710249689169"
 
-class Flagbotbot {
+export class Flagbotbot {
 
     private db: DB;
     private client: Client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -48,7 +49,7 @@ class Flagbotbot {
             if (!interaction.isChatInputCommand()) return;
 
             if (interaction.commandName === cmd.description.name) {
-                cmd.handle(interaction, this.db)
+                cmd.handle(interaction, this.db, this)
             }
         });
     }
@@ -57,6 +58,21 @@ class Flagbotbot {
     constructor(db: DB, commands: DiscordCommand[]) {
         this.db = db;
         this.commands = commands;
+    }
+
+    async postToAnnouncements(content: string) {
+        await this.postToChannel(CHANNEL_ID_ANNOUNCEMENTS, content)
+    }
+
+    async postToChannel(channel_id: string, content: string) {
+        const channel = await this.client.channels.fetch(channel_id);
+        if (channel == null) {
+            console.error("Channel not found", channel_id)
+            return
+        }
+        if (channel.isTextBased()) {
+            (channel as TextChannel).send(content);
+        }
     }
 
     async init() {

@@ -1,5 +1,6 @@
 import { DiscordCommand } from "../DiscordCommand";
-import { categoryOption, getSolvesByChallenge, scoringFunction } from "./shared";
+import { scoringFunction } from "shared";
+import { categoryOption } from "./shared";
 
 export const challengesCommand = new DiscordCommand(
     {
@@ -25,10 +26,9 @@ export const challengesCommand = new DiscordCommand(
         answer.push(`Challenge list`)
 
         const solves = await db.getSolves();
+        const solvesByChallenge = await db.getSolvesByChallenge()
 
-        const solvesByChallenge = getSolvesByChallenge(solves)
-
-        const solvedByUser = solves.filter(solve => solve.user_id == interaction.user.id).map(solve => solve.challenge_id);
+        const solvedByUser = solves.filter(solve => solve.user.id == parseInt(interaction.user.id)).map(solve => solve.challenge.id);
 
 
 

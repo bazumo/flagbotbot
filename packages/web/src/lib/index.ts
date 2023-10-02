@@ -1,6 +1,6 @@
 import { open } from "sqlite";
 import sqlite3 from 'sqlite3';
-import { DB } from "./db";
+import { DB } from "shared";
 
 
 let saved: DB | null = null;
@@ -10,7 +10,7 @@ export async function getClient() {
         return saved;
     }
     const raw_db = await open({
-        filename: './example_db/database.db',
+        filename: '../../db/database.db',
         driver: sqlite3.Database
     })
     const db = new DB(raw_db);

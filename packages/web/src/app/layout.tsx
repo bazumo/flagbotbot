@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className + " min-h-screen flex flex-col"}>
-        <nav>
+        <nav className="container mx-auto">
           <div className="p-4 flex items-center">
             <Image src={Logo} alt="Flagbot logo" width={100}></Image>
             <ul className="text-xl flex self-center ml-auto space-x-6">
@@ -34,7 +34,7 @@ export default function RootLayout({
             </ul>
           </div>
         </nav>
-        {children}
+        <main className="container flex flex-col mx-auto mt-8">{children}</main>
       </body>
     </html>
   );

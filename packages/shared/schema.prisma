@@ -1,0 +1,34 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Challenge {
+  id          Int     @id @default(autoincrement())
+  name        String // TODO move this to challenge yaml or something
+  description String // TODO move this to challenge yaml or something
+  category    String // TODO move this to challenge yaml or something
+  flag        String // TODO move this to challenge yaml or something
+  season      Int     @default(1)
+  solves      Solve[]
+}
+
+model Solve {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  challenge_id Int
+  date         DateTime  @default(now())
+  user         User      @relation(fields: [user_id], references: [id])
+  challenge    Challenge @relation(fields: [challenge_id], references: [id])
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  DiscordId String  @unique
+  name      String
+  solves    Solve[]
+}

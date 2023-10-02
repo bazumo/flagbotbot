@@ -96,8 +96,6 @@ async function main() {
     })
     const db = new DB(raw_db);
 
-    db.createTables();
-
     const bot = new Flagbotbot(db, [
         pingCommand,
         flagCommand,

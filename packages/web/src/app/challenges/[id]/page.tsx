@@ -16,28 +16,26 @@ interface Challenge {
   flag: string;
 }
 
-interface Props {
-  challenge: Challenge;
-}
-
 export default async function Challenge({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const challenge: Challenge = await getChallenge(id);
+  const challenge = await getChallenge(id);
+
+  if (!challenge) {
+    return <div>Challenge not found</div>;
+  }
   return (
-    <main className="container flex flex-col mx-auto mt-8">
+    <div>
+      <h1 className="text-4xl font-bold">{challenge.name}</h1>
+      <p className="mt-4">{challenge.description}</p>
       <div>
-        <h1 className="text-4xl font-bold">{challenge.name}</h1>
-        <p className="mt-4">{challenge.description}</p>
-        <div>
-          <h3>Downloads</h3>
-          <ul>
-            <li></li>
-          </ul>
-        </div>
+        <h3>Downloads</h3>
+        <ul>
+          <li></li>
+        </ul>
       </div>
-    </main>
+    </div>
   );
 }

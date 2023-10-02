@@ -1,5 +1,7 @@
-import { User } from 'discord.js';
+import { User as DiscodUser } from 'discord.js';
 import { Database } from 'sqlite';
+import { PrismaClient } from '@prisma/client'
+import { scoringFunction } from './util';
 
 
 
@@ -7,100 +9,218 @@ import { Database } from 'sqlite';
 export class DB {
 
     private db: Database;
+    private prisma: PrismaClient;
 
     constructor(db: Database) {
+        this.prisma = new PrismaClient()
         this.db = db;
     }
 
-    async createTables() {
-        await this.db.run(`
-        CREATE TABLE IF NOT EXISTS challenges
-        (
-           id INTEGER PRIMARY KEY AUTOINCREMENT,
-           name TEXT,
-           description TEXT,
-           category TEXT,
-           flag TEXT
-       );`)
 
-
-
-
-
-        await this.db.run(`
-       CREATE TABLE IF NOT EXISTS solves
-       (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id TEXT,
-          challenge_id INTEGER,
-          date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (challenge_id) REFERENCES challenges(id)
-      )`);
-
-        await this.db.run(`
-      CREATE TABLE IF NOT EXISTS users
-            (
-                id INTEGER PRIMARY KEY,
-                name TEXT
-            );
-
-
-        `);
-    }
 
     async createChallenge(name: string, description: string, category: string, flag: string) {
-        return this.db.run("INSERT INTO challenges (name, description, category, flag) VALUES (?, ?, ?, ?)", [name, description, category, flag]);
+        return this.prisma.challenge.create({
+            data: {
+                name,
+                description,
+                category,
+                flag
+            }
+        })
     }
 
     async updateChallenge(id: number, name: string, description: string, category: string, flag: string) {
-        return this.db.run("UPDATE challenges SET name = ?, description = ?, category = ?, flag = ? WHERE id = ?", [name, description, category, flag, id]);
+        return this.prisma.challenge.update({
+            where: {
+                id
+            },
+            data: {
+                name,
+                description,
+                category,
+                flag
+            }
+        })
     }
 
-    async ensureUser(user: User) {
-        return this.db.run("INSERT OR IGNORE INTO users (id, name) VALUES (?, ?)", [user.id, user.username]);
+    async ensureUser(user: DiscodUser) {
+        return this.prisma.user.upsert({
+            where: {
+                DiscordId: user.id
+            },
+            update: {},
+            create: {
+                DiscordId: user.id,
+                name: user.username
+            }
+        })
+
     }
 
-    async hasSolve(user: User, flag: string) {
-        const solve = await this.db.get("SELECT * FROM solves JOIN challenges ON solves.challenge_id = challenges.id WHERE user_id = ? AND flag = ?", [user.id, flag]);
-        return solve !== undefined;
+    async hasSolve(user: DiscodUser, flag: string) {
+        const solve = await this.prisma.solve.findFirst({
+            where: {
+                user_id: parseInt(user.id),
+                challenge: {
+                    flag: flag
+                }
+            },
+            include: {
+                challenge: true
+            }
+        });
+
+        return Boolean(solve);
     }
 
     async getChallengeByFlag(flag: string) {
-        const solve = await this.db.get("SELECT * FROM challenges WHERE flag = ?", [flag]);
+        const solve = await this.prisma.challenge.findFirst({
+            where: {
+                flag: flag
+            }
+        });
         return solve;
     }
 
-    async createSolve(user: User, flag: string) {
+    async createSolve(user: DiscodUser, flag: string) {
         await this.ensureUser(user);
         const challenge = await this.getChallengeByFlag(flag);
         if (challenge) {
-            await this.db.run("INSERT INTO solves (user_id, challenge_id) VALUES (?, ?)", [user.id, challenge.id]);
+            await this.prisma.solve.create({
+                data: {
+                    user_id: parseInt(user.id),
+                    challenge_id: challenge.id
+                }
+            });
             return challenge;
         }
     }
 
     async getChallenges() {
-        return this.db.all("SELECT * FROM challenges");
+        return this.prisma.challenge.findMany();
     }
 
     async getChallenge(id: number) {
-        return this.db.get("SELECT * FROM challenges WHERE id = ?", [id]);
+        return this.prisma.challenge.findFirst({
+            where: {
+                id: id
+            }
+        });
     }
 
     async getChallengesByCategory(cat: string) {
-        return this.db.all("SELECT * FROM challenges WHERE category = ?", [cat]);
+        return this.prisma.challenge.findMany({
+            where: {
+                category: cat
+            }
+        });
     }
 
     async getRecentSolves() {
-        return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id ORDER BY date DESC LIMIT 10");
+        return await this.prisma.solve.findMany({
+            take: 10,
+            orderBy: {
+                date: 'desc'
+            },
+            select: {
+                user: {
+                    select: {
+                        name: true,
+                        id: true
+                    }
+                },
+                challenge: {
+                    select: {
+                        name: true
+                    }
+                },
+                date: true
+            }
+        });
     }
 
     async getSolves() {
-        return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id");
+
+        return this.prisma.solve.findMany({
+            orderBy: {
+                date: 'desc'
+            },
+            select: {
+                user: {
+                    select: {
+                        name: true,
+                        id: true
+                    }
+                },
+                challenge: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                date: true
+            }
+        });
     }
 
     async getSolvesByChallengeId(id: number) {
-        return this.db.all("SELECT users.name as user_name, users.id as user_id, challenges.id as challenge_id, challenges.name as challenge_name, date FROM solves JOIN challenges ON solves.challenge_id = challenges.id JOIN users ON solves.user_id = users.id WHERE challenge_id = ?", [id]);
+        return this.prisma.solve.findMany({
+            where: {
+                challenge_id: id
+            },
+            orderBy: {
+                date: 'desc'
+            },
+            select: {
+                user: {
+                    select: {
+                        name: true,
+                        id: true
+                    }
+                },
+                challenge: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                date: true
+            }
+        });
     }
 
+
+
+    async getSolvesByChallenge() {
+        const solves = await this.getSolves();
+
+        return solves.reduce<Record<number, number>>((acc, solve) => {
+            if (acc[solve.challenge.id]) {
+                acc[solve.challenge.id] += 1
+            } else {
+                acc[solve.challenge.id] = 1
+            }
+            return acc
+        }, {})
+    }
+
+
+    async calculateScore() {
+
+        // Disgusting code ahead
+        const challenges = await this.getSolvesByChallenge()
+        const solves = await this.getSolves();
+        const users = await this.prisma.user.findMany();
+
+        const scores = solves.reduce<Record<number, number>>((acc, solve) => {
+            if (acc[solve.user.id]) {
+                acc[solve.user.id] += scoringFunction(challenges[solve.challenge.id])
+            } else {
+                acc[solve.user.id] = scoringFunction(challenges[solve.challenge.id])
+            }
+            return acc
+        }, {})
+
+        return users.map(user => ({ ...user, score: scores[user.id] ?? 0 }))
+    }
 }

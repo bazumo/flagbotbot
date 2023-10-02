@@ -1,6 +1,4 @@
 import { DiscordCommand } from "../DiscordCommand";
-import { calculateScore } from "./shared";
-
 
 export const scoreboardCommand = new DiscordCommand(
     {
@@ -9,9 +7,7 @@ export const scoreboardCommand = new DiscordCommand(
     },
 
     async (interaction, db) => {
-        const solves = await db.getSolves();
-        console.log(solves);
-        const scores = calculateScore(solves)
+        const scores = await db.calculateScore();
         console.log(scores)
         const sorted = scores.sort((a, b) => b.score - a.score);
         const sl = sorted.map(score => `${score.score.toFixed().padStart(4, " ")} points: ${score.user_name}`);

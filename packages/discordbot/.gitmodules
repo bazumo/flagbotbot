@@ -1,0 +1,3 @@
+[submodule "flagbot-chals"]
+	path = challenges
+	url = git@github.com:flagbot/flagbot-chals.git

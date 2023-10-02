@@ -1,0 +1,6 @@
+{
+  "name": "flagbotbot",
+  "workspaces": [
+    "packages/*"
+  ]
+}

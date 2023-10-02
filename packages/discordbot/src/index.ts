@@ -9,7 +9,7 @@ import { pingCommand } from "./commands/pingCommand";
 import { recentSolvesCommand } from "./commands/recentSolvesCommand";
 import { scoreboardCommand } from "./commands/scoreboardCommand";
 import { updateChallengeCommand } from "./commands/updateChallengeCommand";
-import { DB } from "./db";
+import { DB } from "shared";
 import { DiscordCommand } from "./DiscordCommand";
 
 
@@ -91,7 +91,7 @@ export class Flagbotbot {
 
 async function main() {
     const raw_db = await open({
-        filename: 'db/database.db',
+        filename: '../../db/database.db',
         driver: sqlite3.Database
     })
     const db = new DB(raw_db);

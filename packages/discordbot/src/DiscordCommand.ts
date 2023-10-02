@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { Flagbotbot } from ".";
-import { DB } from "./db";
+import { DB } from "../../shared/src/db";
 
 type InteractionHandler = (ev: ChatInputCommandInteraction, db: DB, client: Flagbotbot) => Promise<any>;
 
